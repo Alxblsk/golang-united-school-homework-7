@@ -5,6 +5,7 @@ import (
 	"sort"
 	"testing"
 	"time"
+	"strings"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -62,4 +63,33 @@ func TestMatrixCreationOK(t *testing.T) {
 	assert.Equal(t, mtrx.rows, 3, "Matrix rows number is incorrect!")
 	assert.Equal(t, mtrx.cols, 3, "Matrix cols number is incorrect!")
 	assert.Equal(t, mtrx.data, []int{1, 2, 3, 4, 5, 6, 7, 8, 9}, "Matrix values are incorrect!")
+}
+
+func TestMatrixCreationError(t *testing.T) {
+	_, err := New("1 2 3 \n 4 5")
+	assert.Equal(t, err.Error(), "Rows need to be the same length", "Matrix is correct, but shouldn't be!")
+
+	_, err2 := New("a b c \n d e f")
+	assert.Equal(t, strings.Contains(err2.Error(), "invalid syntax"), true, "Parsing error expected!")
+}
+
+func TestMatrixSetOK(t *testing.T) {
+	mtrx, _ := New("0 0 0 \n 0 0 0")
+	ok := mtrx.Set(1, 0, 5)
+
+	assert.Equal(t, ok, true, "Value hasn't been set!")
+	assert.Equal(t, mtrx.data, []int{0, 0, 0, 5, 0, 0}, "Value in the matrix on a wrong position!")
+}
+
+func TestMatrixSetError(t *testing.T) {
+	mtrx, _ := New("0 0 0 \n 0 0 0")
+	ok := mtrx.Set(10, 10, 1)
+
+	assert.Equal(t, ok, false, "Value shoun't be set!")
+}
+
+func TestMatrixColsOK(t *testing.T) {
+	mtrx, _ := New("1 2 3 \n 4 5 6");
+	assert.Equal(t, mtrx.Rows(), [][]int{[]int{1, 2, 3}, []int{4, 5, 6}}, "Rows are formed incorrectly")
+	assert.Equal(t, mtrx.Cols(), [][]int{[]int{1, 4}, []int{2, 5}, []int{3, 6}}, "Cols are formed incorrectly")
 }
